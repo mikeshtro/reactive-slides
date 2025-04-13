@@ -47,6 +47,23 @@
   }
 }
 
+.two-columns {
+  height: 100%;
+  overflow: hidden;
+
+  > * {
+    height: 100%;
+    float: left;
+    width: 50%;
+  }
+}
+
+.two-columns::after {
+  content: '';
+  clear: both;
+  display: table;
+}
+
 .hljs {
   display: block;
   overflow-x: auto;
@@ -109,4 +126,32 @@
 .hljs-type,
 .hljs-selector-id {
   font-weight: bold;
+}
+
+#reactive-examples {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(8, 12.5%);
+  grid-template-rows: repeat(8, 12.5%);
+  grid-template-areas:
+    'angular angular angular . . . . .'
+    'angular angular angular . . . solid solid'
+    'angular angular angular . . . solid solid'
+    'angular angular angular vue vue vue solid solid'
+    'angular angular angular vue vue vue solid solid'
+    'angular angular angular vue vue vue solid solid'
+    '. . . vue vue vue . .'
+    '. . . vue vue vue . .';
+}
+
+#angular-reactivity {
+  grid-area: angular;
+}
+
+#solid-reactivity {
+  grid-area: solid;
+}
+
+#vue-reactivity {
+  grid-area: vue;
 }

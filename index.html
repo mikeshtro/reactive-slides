@@ -15,17 +15,43 @@
           <h1>Reaktivní programování v kontextu webových aplikací</h1>
         </section>
 
-        <section style="height: 100%" ;>
+        <section>
+          <aside class="notes">
+            <p>
+              Když se začnete zajímat o JS frameworky, velmi brzo v dokumentaci narazíte na odkaz o
+              reaktivitě. Tady mám ukázku ze tří dokumentací. Dokumentace Angularu má pod záložkou
+              essentials hned jeden z prvních odkazů "Reactivity with signals", vue opět "essentials
+              Reactivity fundamentals", solid má "concepts intro to reactivity"
+            </p>
+            <p>
+              V dnešní přednášce se vám pokusím ukázat, co je myšleno tou reaktivitou a proč je v
+              kontextu webových aplikací tak často skloňována.
+            </p>
+            <p>
+              Reaktivní programování se samozřejmě netýká pouze webových frontendů nebo webových
+              aplikací, můžeme ho najít i v jiných oblastech programování, takže stejné principy
+              můžete vidět i v jiných implementacích.
+            </p>
+          </aside>
+          <h2>Proč se zajímat o reaktivitu</h2>
+          <div id="reactive-examples">
+            <img id="angular-reactivity" src="./public/angular-reactivity.png" />
+            <img id="solid-reactivity" src="./public/solid-reactivity.png" />
+            <img id="vue-reactivity" src="./public/vue-reactivity.png" />
+          </div>
+        </section>
+
+        <section style="height: 100%">
           <div class="image-and-text">
             <img src="./public/IMG_2450.JPG" />
             <div>
               <h2>Michal Štrajt</h2>
               <div>
                 <ul>
-                  <li>Technický leader v Edhouse</li>
-                  <li>6 let zkušeností</li>
-                  <li>Většinu kariéry používám Angular</li>
-                  <li>Programátor, otec, improvizátor</li>
+                  <li class="fragment">Technický leader v Edhouse</li>
+                  <li class="fragment">6 let zkušeností</li>
+                  <li class="fragment">Většinu kariéry používám Angular</li>
+                  <li class="fragment">Programátor, otec, improvizátor</li>
                 </ul>
               </div>
             </div>
@@ -142,12 +168,14 @@ function setup(): void {
 // koukejte, tady ho nastavuju znovu
 async function loadComputedPrice(): Promise<void> {
   const price = await loadPrice();
-  const total = await loadTotal();
+  const total = getCurrentTotal();
   computedPrice = price * total;
 }
 
 // překvapení, tady ho nastavuju ještě jednou
-function increaseTotalPrice(price: number, total: number): void {
+function addToCart(): void {
+  const price = getCurrentPrice();
+  const total = getCurrentTotal() + 1;
   computedPrice = price * total;
 }
                 </script>
@@ -263,6 +291,96 @@ const computedPrice = someDeclarativeComputation(() => price.value() * amount.va
                   čase
                 </li>
               </ul>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Totéž, ale místo kódu obrázky</h2>
+          </section>
+          <section style="height: 100%">
+            <aside class="notes">
+              <p>
+                Ono z toho pesudokódu, který jsem ukazoval vlastně nejde nic moc poznat, zkusme si
+                ten rozdíl znázornit graficky
+              </p>
+              <p>
+                Nejprve si projdeme deklarativní kód. Máme nějaký zdroj dat. Během inicializace si z
+                něj přečteme počáteční cenu. Poté ověříme aktuální nakoupené množství a na uložíme
+                do computedPrice
+              </p>
+              <p>
+                Pokud chceme navýšit objednané zboží tak si přečteme aktuální hodnotu, přečteme si
+                aktuální cenu a uložíme do computedPrice
+              </p>
+              <p>
+                Pokud bychom chtěli vypočítat navíc ještě třeba nějakou isExpensive property, která
+                by určovala, jestli například zákazník má nárok na dopravu zdarma, tak jak při
+                inicializaci tak při updatu musím computedPrice porovnat a uložit do isExpensive
+              </p>
+              <p>
+                V deklarativním kódu pouze popisujeme vztahy mezi jednotlivými entitami. Když
+                půjdeme od spodu, tak pouze popíšeme, jak isExpensive závisí na computedPrice, dále
+                pak, jak computedPrice závisí na aktuálním objednaném množstí a načtené ceně. Cena
+                pak závisí na datech načtených ze zdroje dat po inicializace.
+              </p>
+              <p>
+                Nechám pak ten deklarativní systém nebo tu knihovnu poslouchat tento graf a kdykoliv
+                nastane jakákoliv změna ve kterémkoliv uzlu grafu, tak khnihovna zajistí, že se
+                zpropaguje grafem směrem dolů a aktualizuje hodnoty všech uzlů, které po cestě
+                potká.
+              </p>
+            </aside>
+            <div style="display: flex; overflow: hidden; flex-direction: column; height: 100%">
+              <h2>Imperativní a deklarativní programování graficky</h2>
+              <div style="flex: 1; overflow: hidden">
+                <div class="two-columns">
+                  <div class="fragment">
+                    <img src="./public/imperative-graph.png" />
+                  </div>
+                  <div class="fragment">
+                    <img src="./public/reactive-graph.png" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section style="height: 100%">
+            <aside class="notes">
+              <p>
+                Pokud tedy chci zobrazit isExpensive property, kterou jsem minule vypočetl a
+                používám nějaký reaktivní systém, pak ji pouze nějakým způsobem navážu na view a
+                nechám ten systém dělat svou práci.
+              </p>
+              <p>
+                A tady se začíná ukazovat jeden z důvodů, proč se o reaktivitě mluví velmi často v
+                souvislosti s UI knihovami a tedy proč je to tak často skloňované téma ve světě JS.
+              </p>
+              <p>
+                Protože když se zamyslíme nad tím, jakým spůsobem vlastně funguje view vrstva
+                aplikace, tak ji můžeme znázornit nějak takto. Máme zdroj změny. To může být třeba
+                uživatelské klkání, nějaký časovač nebo nějaká jiná notifikace. Pokud nastane změna,
+                aktualizují se data, potom data transformujeme a nakonec zobrazíme. A pokud máme
+                nástroj, který nám umožní pouze nějak zapsat tento graf pomocí kódu a bude za nás
+                hlídat jeho akualizaci, tak máme zajištěno, že UI bude vždy akuální protože
+                reaktivně budu reagovat na jakokoliv změnu. A to se vyplatí.
+              </p>
+            </aside>
+            <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden">
+              <pre>
+                <code class="stretch language-html">
+                  <script type="text/template">
+                    <div>
+                      <span>Doprava zdarma:</span>
+                      <span>{{ isExpensive }}</span>
+                    </div>
+                  </script>
+                </code>
+              </pre>
+              <div class="fragment" style="flex: 1; overflow: hidden">
+                <img src="./public/reactive-in-ui.png" />
+              </div>
             </div>
           </section>
         </section>

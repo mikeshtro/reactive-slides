@@ -5,10 +5,8 @@ import RevealNotes from 'reveal.js/plugin/notes/notes';
 import RevealHighlight from 'reveal.js/plugin/highlight/highlight';
 
 const deck = new Reveal({
-  margin: 0,
   width: '100%',
   height: '100%',
-  center: false,
 });
 deck.initialize({
   plugins: [RevealHighlight, RevealNotes],
