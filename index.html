@@ -136,7 +136,7 @@ function setup(): void {
 // koukejte, tady ho nastavuju znovu
 async function loadComputedPrice(): Promise<void> {
   const price = await loadPrice();
-  const total = await loadTotal();
+  const total = getCurrentTotal();
   computedPrice = price * total;
 }
                 </script>
@@ -182,6 +182,51 @@ function addToCart(): void {
               </code>
             </pre>
           </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Když si pak rozmyslíme, že třeba uživatel bude mít dopravu zdarma, pokud nakoupí za
+                tisícovku, tak pokaždé, když manipuluju s computedPrice, musím také ošetřit
+                isExpensive.
+              </p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// imperativní (computedPrice může být nahrazen po deklaraci)
+let computedPrice: number;
+let isExpensive: number;
+
+// tady nastavuju poprvé
+function setup(): void {
+  computedPrice = 0;
+  setIsExpensive();
+}
+
+// koukejte, tady ho nastavuju znovu
+async function loadComputedPrice(): Promise<void> {
+  const price = await loadPrice();
+  const total = getCurrentTotal();
+  computedPrice = price * total;
+  setIsExpensive();
+}
+
+// překvapení, tady ho nastavuju ještě jednou
+function addToCart(): void {
+  const price = getCurrentPrice();
+  const total = getCurrentTotal() + 1;
+  computedPrice = price * total;
+  setIsExpensive();
+}
+
+function setIsExpensive(): void {
+  isExpensive = computedPrice > 999;
+}
+                </script>
+              </code>
+            </pre>
+          </section>
+
           <section>
             <h3>Deklarativní programování</h3>
           </section>
@@ -260,6 +305,29 @@ const amount = someDeclarativePrimitive(initialAmount);
 
 // deklarativní (veškeré chování computedPrice price je popsáno v jeho deklaraci)
 const computedPrice = someDeclarativeComputation(() => price.value() * amount.value());
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>Stejně tak můžu pouze deklarovat závislost mezi computedPrice a isExpensive.</p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// deklarativní (computedPrice nemůže být nahrazen po deklaraci)
+const initialPrice = 0;
+const initialAmount = 0;
+
+// deklarativní (price nemůže být nahrazen po deklaraci, ale jeho hodnota se může měnit)
+const price = someDeclarativePrimitive(initialPrice);
+const amount = someDeclarativePrimitive(initialAmount);
+
+// deklarativní (veškeré chování computedPrice price je popsáno v jeho deklaraci)
+const computedPrice = someDeclarativeComputation(() => price.value() * amount.value());
+
+const isExpensive = someDeclarativeComputation(() => computedPrice.value() > 999);
                 </script>
               </code>
             </pre>
@@ -371,10 +439,10 @@ const computedPrice = someDeclarativeComputation(() => price.value() * amount.va
               <pre>
                 <code class="stretch language-html">
                   <script type="text/template">
-                    <div>
-                      <span>Doprava zdarma:</span>
-                      <span>{{ isExpensive }}</span>
-                    </div>
+<div>
+  <span>Doprava zdarma:</span>
+  <span>{{ isExpensive }}</span>
+</div>
                   </script>
                 </code>
               </pre>
@@ -406,6 +474,125 @@ console.log(c);
           <img class="fragment" src="/calculator.png" />
           <img class="fragment" src="/excel.png" />
         </section>
+        <section>
+          <section>
+            <aside class="notes">
+              <p>
+                Ve světě JS jsou nejvíce skloňované dva typy reaktivity. Singály a observable.
+                Podíváme v rychlosti na to, co mají společného a čím se liší. Začneme u signálů.
+              </p>
+              <p>
+                Signály se poprvé v JS objevily někdy v roce 2010 ve frameworcích Knockout a
+                Backbone a vlastně původní Angular.js. S příchodem Reactu, který sám o sobě signály
+                neimplementuje se na ně trochu zapomnělo. Znovu se proslavily až s příchodem
+                frameworku Solid a dnes je najdete takřka všude, ve Vue, ve Svelte, v Solidu, v
+                Angularu.
+              </p>
+            </aside>
+            <h2>Signal</h2>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              Signálem je typicky myšlena synchronní hodnota, která se může měnit v čase, aniž by
+              byla nahrazena.
+            </aside>
+            <pre data-id="signals">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const price = signal(0);
+const amount = signal(0);
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              Hodnotu signálu můžu nastavit jak imperativně, voláním nějaké metody "set" nebo
+              deklarativně provázáním s nějakým HTML elementem.
+            </aside>
+            <pre data-id="signals">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const price = signal(0);
+const amount = signal(0);
+
+// imperativní
+amount.set(42);
+
+// declarativní
+<input type="number" [(ngModel)]="price" />
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                A teď teprve přijde to zajímavé. Protože jedna ze skvělých vlastností signálů a
+                reaktivních primitiv obecně je, že je můžu komponovat do sebe a tím vytvářet ty
+                grafy, které jsem ukazoval.
+              </p>
+              <p>
+                A komponovaný signál aktualizuje svou hodnotu pokaždé, když se změní kterákoliv z
+                jeho závislostí.
+              </p>
+            </aside>
+            <pre data-id="signals">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const price = signal(0);
+const amount = signal(0);
+
+const computedPrice = computed(() => price() * amount());
+
+// logs 0
+console.log(computedPrice());
+
+// imperativní nastavení
+price.set(6)
+amount.set(7);
+
+// logs 42
+console.log(computedPrice());
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Co nás ale zajímá typicky nejvíc je, aby se vypočtená hodnota automaticky
+                projevila ve view.
+              </p>
+              <p>
+                A když jsem na začátku přednášky říkal, že většinu kódu píšu reaktivně, tak tím
+                jsem myslel, že většina mého kódu vypadá nějak takto.
+              </p>
+            </aside>
+            <pre data-id="signals">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const price = signal(0);
+const amount = signal(0);
+
+const computedPrice = computed(() => price() * amount());
+
+<input type="number" [(ngModel)]="price" />
+<input type="number" [(ngModel)]="amount" />
+<div>{{ computedPrice() }}</div>
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>Signal</h3>
+            <ul>
+              <li class="fragment">Deklarativní popis dat</li>
+              <li class="fragment">Jedna hodnota, která se mění v čase</li>
+              <li class="fragment">Umožňje kompozici více signálu do jednoho</li>
+            </ul>
+          </section>
+        </secton>
       </div>
     </div>
     <script type="module" src="/main.js"></script>
