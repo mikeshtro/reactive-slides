@@ -22,8 +22,29 @@
   --hljs-color-light: #ffffff;
 }
 
-.reveal .slides h1 {
+.reveal .slides h1,
+.reveal .slides h2,
+.reveal .slides h3,
+.reveal .slides h4,
+.reveal .slides h5,
+.reveal .slides h6 {
   text-align: left;
+}
+
+.reveal .slides ul {
+  display: block;
+}
+
+.image-and-text {
+  display: grid;
+  grid-template-columns: minmax(300px, 30%) 1fr;
+  height: 100%;
+
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .hljs {
