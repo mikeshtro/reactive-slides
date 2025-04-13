@@ -11,8 +11,243 @@
   <body>
     <div class="reveal">
       <div class="slides">
-        <section class="stretch">
+        <section>
           <h1>Reaktivní programování v kontextu webových aplikací</h1>
+        </section>
+
+        <section>
+          <section>
+            <aside class="notes">
+              <p>
+                Než se pustím do reaktivního programování jako takového, definujme si nejprve dva
+                pojmy, které zde často budu používat. Imperativní a deklarativní programování.
+              </p>
+              <p>
+                Nebudu zacházet do teorie ani do matematiky, i když nějaké matematické základy za
+                reaktivními principy je možné najít. Jak jsem říkal, chtěl bych vám to představit
+                spíš z pohledu spokojeného uživatele než z pohledu vědce.
+              </p>
+            </aside>
+            <h2>Imperativní vs deklarativní programování</h2>
+          </section>
+          <section>
+            <h3>Imperativní programování</h3>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Jak poznáme imperativní kód? V imperativním kódu nejprve definujeme, co potřebujeme
+                a v nějaké další části kódu tomu pak měníme hodnotu.
+              </p>
+              <p>
+                Mějme například proměnnou computedPrice, která nám reprezentuje celkovou hodnotu
+                objednané kávy. V definici proměnné nevidím nic jiného než název property a její
+                datový typ.
+              </p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// imperativní (computedPrice může být nahrazen po deklaraci)
+let computedPrice: number;
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>Později v kódu pak proměnné computedPrice nastavím nějakou počáteční hodnotu.</p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// imperativní (computedPrice může být nahrazen po deklaraci)
+let computedPrice: number;
+
+// tady nastavuju poprvé
+function setup(): void {
+  computedPrice = 0;
+}
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Ještě o něco později v kódu můžu hodnotu změnit například tak, že si načtu data z
+                nějaké databáze, ať už lokální nebo přes HTTP request.
+              </p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// imperativní (computedPrice může být nahrazen po deklaraci)
+let computedPrice: number;
+
+// tady nastavuju poprvé
+function setup(): void {
+  computedPrice = 0;
+}
+
+// koukejte, tady ho nastavuju znovu
+async function loadComputedPrice(): Promise<void> {
+  const price = await loadPrice();
+  const total = await loadTotal();
+  computedPrice = price * total;
+}
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                A ještě o něco později ho mohu změnit například na základě nějaké uživatelské akce
+              </p>
+              <p>
+                Jak je vidět, imperativní programovní je velmi intuitivní. Popisuju přesně pomocí
+                funkcí nebo metod, jak se má systém chovat. Co přesně má můj kód dělat krok za
+                krokem.
+              </p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// imperativní (computedPrice může být nahrazen po deklaraci)
+let computedPrice: number;
+
+// tady nastavuju poprvé
+function setup(): void {
+  computedPrice = 0;
+}
+
+// koukejte, tady ho nastavuju znovu
+async function loadComputedPrice(): Promise<void> {
+  const price = await loadPrice();
+  const total = await loadTotal();
+  computedPrice = price * total;
+}
+
+// překvapení, tady ho nastavuju ještě jednou
+function increaseTotalPrice(price: number, total: number): void {
+  computedPrice = price * total;
+}
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>Deklarativní programování</h3>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Oproti tomu v deklarativním kódu není možné nahradit hodnotu, kterou jsme jednou
+                deklarovali.
+              </p>
+              <p>
+                Veškeré chování deklaratinví hodnoty je definováno během její deklarace a není možné
+                už hodnotu změnit
+              </p>
+              <p>Nejjednodušší deklarativní hodnotou může být například konstana.</p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// deklarativní (computedPrice nemůže být nahrazen po deklaraci)
+const initialPrice = 0;
+const initialAmount = 0;
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Kromě konstant deklarativní systémy nabízejí možnost prmitiv, díky kterým můžeme
+                nadefinovat hodnotu tak, že nikdy není v kódu nahrazena, ale její hodnota se může
+                měnit.
+              </p>
+              <p>
+                someDeclarativePrimitive je tedy nějaká funkce, která nám vytvoří deklarativní
+                hodnotu. Jak přesně funguje a co dělá záleží na knihovně nebo frameworku, který
+                používáme pro deklarativní programování.
+              </p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// deklarativní (computedPrice nemůže být nahrazen po deklaraci)
+const initialPrice = 0;
+const initialAmount = 0;
+
+// deklarativní (price nemůže být nahrazen po deklaraci, ale jeho hodnota se může měnit)
+const price = someDeclarativePrimitive(initialPrice);
+const amount = someDeclarativePrimitive(initialAmount);
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              <p>
+                Deklarativní systémy umožňují skládat deklarativní primitiva a vytvářet hodnoty,
+                které jsou odvozené z jednoho nebo více prmitiv. Veškeré závislosti těchto
+                vypočítaných hodnot jsou také uvedené přímo v deklaraci a jsou tedy také
+                deklarativní.
+              </p>
+              <p>
+                computedPrice tedy závisí na hodnotách price a amount a bude mít vždy aktuální
+                hodnotu vypočítanou z obou závislostí.
+              </p>
+            </aside>
+            <pre data-id="imperative-code">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// deklarativní (computedPrice nemůže být nahrazen po deklaraci)
+const initialPrice = 0;
+const initialAmount = 0;
+
+// deklarativní (price nemůže být nahrazen po deklaraci, ale jeho hodnota se může měnit)
+const price = someDeclarativePrimitive(initialPrice);
+const amount = someDeclarativePrimitive(initialAmount);
+
+// deklarativní (veškeré chování computedPrice price je popsáno v jeho deklaraci)
+const computedPrice = someDeclarativeComputation(() => price.value() * amount.value());
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section>
+            <div>
+              <h3>Imperativní &times; Deklarativní &times; Reaktivní</h3>
+            </div>
+            <div class="fragment">
+              <h4>Imperativní programování</h4>
+              <ul>
+                <li>Popisuje JAK se má kód vykonávát</li>
+                <li>Volá funkce a nastavuje proměnné</li>
+              </ul>
+            </div>
+            <div class="fragment">
+              <h4>Deklarativní programování</h4>
+              <ul>
+                <li>Popisuje CO má kód vykonávát</li>
+                <li>Jako programátor neřeším JAK se kód vykonat, to za mě řeší knihovna</li>
+              </ul>
+            </div>
+            <div class="fragment">
+              <h4>Reaktivní programování</h4>
+              <ul>
+                <li>Popisuje CO má kód vykonávát v čase</li>
+                <li>
+                  Typ deklarativního programování, kde deklarativní primitiva mohou měnit hodnoty v
+                  čase
+                </li>
+              </ul>
+            </div>
+          </section>
         </section>
       </div>
     </div>
