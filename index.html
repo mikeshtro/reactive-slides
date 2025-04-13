@@ -35,15 +35,15 @@
           </aside>
           <h2>Proč se zajímat o reaktivitu</h2>
           <div id="reactive-examples">
-            <img id="angular-reactivity" src="./public/angular-reactivity.png" />
-            <img id="solid-reactivity" src="./public/solid-reactivity.png" />
-            <img id="vue-reactivity" src="./public/vue-reactivity.png" />
+            <img id="angular-reactivity" src="/angular-reactivity.png" />
+            <img id="solid-reactivity" src="/solid-reactivity.png" />
+            <img id="vue-reactivity" src="/vue-reactivity.png" />
           </div>
         </section>
 
         <section style="height: 100%">
           <div class="image-and-text">
-            <img src="./public/IMG_2450.JPG" />
+            <img src="/IMG_2450.JPG" />
             <div>
               <h2>Michal Štrajt</h2>
               <div>
@@ -337,10 +337,10 @@ const computedPrice = someDeclarativeComputation(() => price.value() * amount.va
               <div style="flex: 1; overflow: hidden">
                 <div class="two-columns">
                   <div class="fragment">
-                    <img src="./public/imperative-graph.png" />
+                    <img src="/imperative-graph.png" />
                   </div>
                   <div class="fragment">
-                    <img src="./public/reactive-graph.png" />
+                    <img src="/reactive-graph.png" />
                   </div>
                 </div>
               </div>
@@ -379,10 +379,32 @@ const computedPrice = someDeclarativeComputation(() => price.value() * amount.va
                 </code>
               </pre>
               <div class="fragment" style="flex: 1; overflow: hidden">
-                <img src="./public/reactive-in-ui.png" />
+                <img src="/reactive-in-ui.png" />
               </div>
             </div>
           </section>
+        </section>
+
+        <section>
+          <h2>Kvíz</h2>
+          <pre class="fragment">
+            <code class="stretch">
+              <script type="text/template">
+var a = 4;
+var b = 2;
+var c = a + b;
+b = 10;
+console.log(c);
+              </script>
+            </code>
+          </pre>
+          <ul>
+            <li class="fragment">6</li>
+            <li class="fragment">14</li>
+            <li class="fragment">Něco jiného</li>
+          </ul>
+          <img class="fragment" src="/calculator.png" />
+          <img class="fragment" src="/excel.png" />
         </section>
       </div>
     </div>
