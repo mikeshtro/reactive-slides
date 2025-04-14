@@ -474,6 +474,7 @@ console.log(c);
           <img class="fragment" src="/calculator.png" />
           <img class="fragment" src="/excel.png" />
         </section>
+
         <section>
           <section>
             <aside class="notes">
@@ -520,7 +521,7 @@ const amount = signal(0);
 amount.set(42);
 
 // declarativní
-<input type="number" [(ngModel)]="price" />
+<input type="number" [(value)]="price" />
                 </script>
               </code>
             </pre>
@@ -578,8 +579,8 @@ const amount = signal(0);
 
 const computedPrice = computed(() => price() * amount());
 
-<input type="number" [(ngModel)]="price" />
-<input type="number" [(ngModel)]="amount" />
+<input type="number" [(value)]="price" />
+<input type="number" [(value)]="amount" />
 <div>{{ computedPrice() }}</div>
                 </script>
               </code>
@@ -594,6 +595,7 @@ const computedPrice = computed(() => price() * amount());
             </ul>
           </section>
         </section>
+
         <section>
           <section>
             <aside class="notes">
@@ -788,6 +790,187 @@ subscription2.unsubscribe();
               </code>
             </pre>
           </section>
+          <section>
+            <h3>Observable</h3>
+            <ul>
+              <li class="fragment">Deklarativní popis událostí</li>
+              <li class="fragment">Kolekce eventů nebo hodnot v čase</li>
+              <li class="fragment">Umožňje kompozici více observable do jednoho</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h3 style="display: flex">
+              <span style="flex: 1; text-align: left">Signal</span>
+              <span style="flex: 1; text-align: left">Observable</span>
+            </h3>
+            <div class="fragment" style="display: flex">
+              <span style="flex: 1; text-align: left">Jedna hodnota měnící se v čase</span>
+              <span style="flex: 1; text-align: left"
+                >Kolekce událostí, které nastávají v čase</span
+              >
+            </div>
+            <div class="fragment" style="display: flex">
+              <span style="flex: 1; text-align: left">Výhodný pro synchronní data</span>
+              <span style="flex: 1; text-align: left">Výhodný pro asynchronní data</span>
+            </div>
+            <div class="fragment" style="display: flex">
+              <span style="flex: 1; text-align: left">Jednoduché použítí</span>
+              <span style="flex: 1; text-align: left">Náročné na použití</span>
+            </div>
+            <div class="fragment" style="display: flex">
+              <span style="flex: 1; text-align: left">Náročný na implementaci</span>
+              <span style="flex: 1; text-align: left">Jednoduchý na implementaci</span>
+            </div>
+            <div class="fragment" style="display: flex">
+              <span style="flex: 1; text-align: left">Jednoduchý převod na observable</span>
+              <span style="flex: 1; text-align: left">Jednoduchý převod na signal</span>
+            </div>
+          </section>
+          <section style="height: 100%">
+            <div style="height: 100%">
+              <img src="/reactive-in-ui.png" />
+            </div>
+          </section>
+          <section data-auto-animate>
+            <pre data-id="final-workflow">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// observalbe klikání na tlačítko
+const buttonClick = buttonElement.when('click');
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <pre data-id="final-workflow">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// observalbe klikání na tlačítko
+const buttonClick = buttonElement.when('click');
+// observable po každém kliku načte data
+const loadedPrice = buttonClick.switchMap(() => loadPriceData());
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <pre data-id="final-workflow">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// observalbe klikání na tlačítko
+const buttonClick = buttonElement.when('click');
+// observable po každém kliku načte data
+const loadedPrice = buttonClick.switchMap(() => loadPriceData());
+// převod price na signal
+const price = toSignal(loadedPrice);
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <pre data-id="final-workflow">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// observalbe klikání na tlačítko
+const buttonClick = buttonElement.when('click');
+// observable po každém kliku načte data
+const loadedPrice = buttonClick.switchMap(() => loadPriceData());
+// převod price na signal
+const price = toSignal(loadedPrice);
+// signal držící objednaých kusů
+const amount = singal(0);
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <pre data-id="final-workflow">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// observalbe klikání na tlačítko
+const buttonClick = buttonElement.when('click');
+// observable po každém kliku načte data
+const loadedPrice = buttonClick.switchMap(() => loadPriceData());
+// převod price na signal
+const price = toSignal(loadedPrice);
+// signal držící objednaých kusů
+const amount = singal(0);
+// konečná cena
+const totalPrice = computed(() => price() * amount());
+// má uživate nárok na slevu?
+const isExpensive = computed(() => totalPrice() > 999);
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <pre data-id="final-workflow">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+// observalbe klikání na tlačítko
+const buttonClick = buttonElement.when('click');
+// observable po každém kliku načte data
+const loadedPrice = buttonClick.switchMap(() => loadPriceData());
+// převod price na signal
+const price = toSignal(loadedPrice);
+// signal držící objednaých kusů
+const amount = singal(0);
+// konečná cena
+const totalPrice = computed(() => price() * amount());
+// má uživate nárok na slevu?
+const isExpensive = computed(() => totalPrice() > 999);
+
+<button #buttonElement>Reload prices</button>
+<input type="number" [(value)]="amount" />
+<div>
+  <span>Is expensive?</span>
+  <span>{{ isExpensive() }}</span>
+</div>
+                </script>
+              </code>
+            </pre>
+          </section>
+        </section>
+
+        <section>
+          <h2>A co performance?</h2>
+        </section>
+
+        <section>
+          <h2>Vážně potřebuji framework?</h2>
+          <pre class="fragment">
+            <code class="stretch language-typescript">
+              <script type="text/template">
+async function* timer(limit) {
+  for (let i = 0; i < limit; i++) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    yield i;
+  }
+}
+
+Observable.from(timer(10)).subscribe(console.log)
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Shrnutí</h2>
+          <ul>
+            <li class="fragment">Deklarativní kód popisuje CO, ne JAK</li>
+            <li class="fragment">Reaktivní kód je deklarativní kód, který se vyvíjí v čase</li>
+            <li class="fragment">Reaktivní kód je výhodný pro popis UI</li>
+            <li class="fragment">V reaktivním kódu odvozujete stav místo nastavování stavu</li>
+            <li class="fragment">V JavaScriptu existuje mnoho reaktivních knihoven</li>
+            <li class="fragment">V budoucnu snad reaktivita bude součástí JavaScriptu</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Děkuji za pozornost</h2>
         </section>
       </div>
     </div>
