@@ -49,8 +49,8 @@
               <div>
                 <ul>
                   <li class="fragment">Technický leader v Edhouse</li>
-                  <li class="fragment">6 let zkušeností</li>
-                  <li class="fragment">Většinu kariéry používám Angular</li>
+                  <li class="fragment">Frontend vývojář</li>
+                  <li class="fragment">7 let zkušeností s frontendem</li>
                   <li class="fragment">Programátor, otec, improvizátor</li>
                 </ul>
               </div>
@@ -136,8 +136,8 @@ function setup(): void {
 // koukejte, tady ho nastavuju znovu
 async function loadComputedPrice(): Promise<void> {
   const price = await loadPrice();
-  const total = getCurrentTotal();
-  computedPrice = price * total;
+  const amount = getCurrentAmount();
+  computedPrice = price * amount;
 }
                 </script>
               </code>
@@ -168,15 +168,15 @@ function setup(): void {
 // koukejte, tady ho nastavuju znovu
 async function loadComputedPrice(): Promise<void> {
   const price = await loadPrice();
-  const total = getCurrentTotal();
-  computedPrice = price * total;
+  const amount = getCurrentAmount();
+  computedPrice = price * amount;
 }
 
 // překvapení, tady ho nastavuju ještě jednou
 function addToCart(): void {
   const price = getCurrentPrice();
-  const total = getCurrentTotal() + 1;
-  computedPrice = price * total;
+  const amount = getCurrentAmount() + 1;
+  computedPrice = price * amount;
 }
                 </script>
               </code>
@@ -206,16 +206,16 @@ function setup(): void {
 // koukejte, tady ho nastavuju znovu
 async function loadComputedPrice(): Promise<void> {
   const price = await loadPrice();
-  const total = getCurrentTotal();
-  computedPrice = price * total;
+  const amount = getCurrentAmount();
+  computedPrice = price * amount;
   setIsExpensive();
 }
 
 // překvapení, tady ho nastavuju ještě jednou
 function addToCart(): void {
   const price = getCurrentPrice();
-  const total = getCurrentTotal() + 1;
-  computedPrice = price * total;
+  const amount = getCurrentAmount() + 1;
+  computedPrice = price * amount;
   setIsExpensive();
 }
 
@@ -561,12 +561,13 @@ console.log(computedPrice());
           <section data-auto-animate>
             <aside class="notes">
               <p>
-                Co nás ale zajímá typicky nejvíc je, aby se vypočtená hodnota automaticky
-                projevila ve view.
+                Co nás ale zajímá typicky nejvíc je, aby se vypočtená hodnota automaticky projevila
+                ve view. Zde je potřeba využít vlastnotí frameworku nebo knihovny, která poskytuje
+                API k tomu, abychom deklarativně mohli provázat signál s DOMem.
               </p>
               <p>
-                A když jsem na začátku přednášky říkal, že většinu kódu píšu reaktivně, tak tím
-                jsem myslel, že většina mého kódu vypadá nějak takto.
+                A když jsem na začátku přednášky říkal, že většinu kódu píšu reaktivně, tak tím jsem
+                myslel, že většina mého kódu vypadá nějak takto.
               </p>
             </aside>
             <pre data-id="signals">
@@ -592,7 +593,202 @@ const computedPrice = computed(() => price() * amount());
               <li class="fragment">Umožňje kompozici více signálu do jednoho</li>
             </ul>
           </section>
-        </secton>
+        </section>
+        <section>
+          <section>
+            <aside class="notes">
+              <p>
+                Druhým raektivním primitivem, se kterým se v JS můžeme běžně setkat, je observable.
+              </p>
+            </aside>
+            <h2>Observable</h2>
+          </section>
+          <section style="height: 100%">
+            <div style="display: flex; flex-direction: column; height: 100%">
+              <aside class="notes">
+                <p>
+                  Observable vychází z návrvhového vzoru observer. Observer pattern trochu obrací
+                  vztah mezi producentem a konzumentem dat. Když se trochu opět vrátím k
+                  imperativnímu kódu v klasickém imperativním tak zvaném pull-based systému
+                  konzument jde za producentem ve chvíli, kdy chce data a producent mu je dá, pokud
+                  je má k dispozici.
+                </p>
+                <p>
+                  Reálně to znamená, že jako programátor zavolám funkci, ta se podívá třeba do
+                  databáze, pokusí se najít data a vrátí mi je pokud je má k dispozici. Pokud je
+                  nemá k dispozici, tak nevrátí nic nebo vrátí chybu a já jako programátor musím
+                  tento stav ošetřit. Navíc se může stát, že poruducent třeba od mého posledního
+                  dotazu změnil data několikrát, ale když se já jako konzument zeptám, dostanu pouze
+                  poslední hodnotu. Což může být to, co chci, ale také nemusí.
+                </p>
+                <p>
+                  To byl pull-based systém. Push-based systém obrací tento vztah a tedy konzument se
+                  pouze zaregistruje u producenta, že až bude mít něco zajímavého, tak ať dá vědět.
+                  Producent pak ve chvíli, kdy má připravená data, tak notifikuje všechny
+                  konzumenty. Z pohledu konzumenta to je výhodné, protože nemusím ošetřovat chybové
+                  a nevalidní stavy tak často. Nevýhoda může nastat ale ve chvíli, kdy producent
+                  chrlí data rychleji, než je konzument stíhá zpracovávat.
+                </p>
+                <p>
+                  V reálném životě si to můžeme představit třeba na platformě youtube. Představte
+                  si, že máte svého oblíbeného tvůrce. V pull based systému ve chvíli, kdy chcete
+                  vy, tak jdete na youtube, podíváte se na poslední video, které vytvořil. Můžete
+                  zjistit, že tam žádné nové video není nebo naopak, že vám jich uniklo hodně.
+                  Naopak v push based systému kliknete na tlačítko subscribe a jdete dělat něco
+                  jiného. A když vám přijde notifikace, tak se na video okamžitě podíváte. Akorát
+                  když tvůrce bude hodně aktivní, tak vás bude nepříjemně spamovat.
+                </p>
+                <p>
+                  Observer pattern popisuje tento push based systém. Existuje producent, ke kterému
+                  se může zaregistrovat několik konzumentů a pokažké, když producent vyprodukuje
+                  data, tak je všechny notifikuje.
+                </p>
+              </aside>
+              <h4>Observer pattern</h4>
+              <div style="flex: 1; overflow: hidden">
+                <img class="fragment" src="/observer-pattern.png" />
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              V té nejčitší formě observable vypadá nějak takto. Tady mám observable, který spoustí
+              časovač a každou sekundu notifikuje své subscribery.
+            </aside>
+            <pre data-id="observable">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const timer = new Observable(subscriber => {
+  const interval = setInterval(() => {
+    // tady notifikuje subscribera
+    subscriber.next()
+  }, 1000)
+
+  return () => {
+    clearInterval(interval)
+  }
+})
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              Observable obecně nic nedělá, dokud na něm není alespoň jedna subskribce. Poté začne
+              vykonávat svou činnost a pokaždé, když je zavolána funkce next, tak jsou všechny
+              aktuální subskribce notifikovány o nové hodnotě. A to dělá tak dlouho, dokud na něm
+              není zavolán unsubscribe. Na rozdíl od signálu observable skutečně pouze notifikuje,
+              ale nedrží zádnou hodnotu, proto pokud bych se pokusil z něj nějakou hodnotu dostat,
+              nedostanu nic zajímavého.
+            </aside>
+            <pre data-id="observable">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const timer = new Observable(subscriber => {
+  const interval = setInterval(() => {
+    subscriber.next()
+  }, 1000)
+
+  return () => {
+    clearInterval(interval)
+  }
+})
+
+// nezaloguje nic zajímavého, observable nic nedělá
+console.log(timer);
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              Observable obecně nic nedělá, dokud na něm není alespoň jedna subskribce. Poté začne
+              vykonávat svou činnost a pokaždé, když je zavolána funkce next, tak jsou všechny
+              aktuální subskribce notifikovány o nové hodnotě. A to dělá tak dlouho, dokud na něm
+              není zavolán unsubscribe. Na rozdíl od signálu observable skutečně pouze notifikuje,
+              ale nedrží zádnou hodnotu, proto pokud bych se pokusil z něj nějakou hodnotu dostat,
+              nedostanu nic zajímavého.
+            </aside>
+            <pre data-id="observable">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const timer = new Observable(subscriber => {
+  const interval = setInterval(() => {
+    subscriber.next()
+  }, 1000)
+
+  return () => {
+    clearInterval(interval)
+  }
+})
+
+// nezaloguje nic zajímavého, observable nic nedělá
+console.log(timer);
+
+const subscription1 = timer.subscribe(() => {
+  // pokaždé, když timer notifikuje, zloguje aktuální datum
+  console.log(new Date())
+})
+
+const subscription2  = timer.subscribe(() => {
+  // pokaždé, když timer notifikuje, zloguje "Hello world"
+  console.log('Hello world')
+})
+
+
+// nezaloguje nic zajímavého
+console.log(timer)
+                </script>
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <aside class="notes">
+              Observable obecně nic nedělá, dokud na něm není alespoň jedna subskribce. Poté začne
+              vykonávat svou činnost a pokaždé, když je zavolána funkce next, tak jsou všechny
+              aktuální subskribce notifikovány o nové hodnotě. A to dělá tak dlouho, dokud na něm
+              není zavolán unsubscribe. Na rozdíl od signálu observable skutečně pouze notifikuje,
+              ale nedrží zádnou hodnotu, proto pokud bych se pokusil z něj nějakou hodnotu dostat,
+              nedostanu nic zajímavého.
+            </aside>
+            <pre data-id="observable">
+              <code class="stretch language-typescript">
+                <script type="text/template">
+const timer = new Observable(subscriber => {
+  const interval = setInterval(() => {
+    subscriber.next()
+  }, 1000)
+
+  return () => {
+    clearInterval(interval)
+  }
+})
+
+// nezaloguje nic zajímavého, observable nic nedělá
+console.log(timer);
+
+const subscription1 = timer.subscribe(() => {
+  // pokaždé, když timer notifikuje, zloguje aktuální datum
+  console.log(new Date())
+})
+
+const subscription2  = timer.subscribe(() => {
+  // pokaždé, když timer notifikuje, zloguje "Hello world"
+  console.log('Hello world')
+})
+
+
+// nezaloguje nic zajímavého
+console.log(timer)
+
+// až notifikace nepotřebuju, je potřeba uklidit
+subscription1.unsubscribe();
+subscription2.unsubscribe();
+                </script>
+              </code>
+            </pre>
+          </section>
+        </section>
       </div>
     </div>
     <script type="module" src="/main.js"></script>
